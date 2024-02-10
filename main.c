@@ -22,6 +22,18 @@ int main()
 	int *allPositions = calloc(N, sizeof(int)); // Array para guardar todas las posiciones
 	int position, randomNum;
 	int i = 0, j = 0;
+	char choice;
+
+	clean();
+
+	printf("¿Quieres empezar con el primer movimiento? (s/n): ");
+	scanf(" %c", &choice);
+
+	if (choice == 'n' || choice == 'N') {
+		randomNum = rand() % N;
+		board[randomNum] = 'X';
+		i++;
+	}
 
 	clean();
 	printf("%*s%s\n", 67, "", "Juego del gato 🐈\n");
