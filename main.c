@@ -40,11 +40,12 @@ int main()
 		{
 			allPositions[i] = position-1;
 			i++;
+
 			if (i != 1) board = newBoardMaker(randomNum, board, position);
 
 			if (i < N && !checkWin(board, 'O')) 
 			{
-				do {
+				do { // Ciclo para sacar un numero random que no sea igual a alguna posicion anterior
 					randomNum = rand() % N;
 					j = 0;
 					while (j < N)
@@ -64,6 +65,7 @@ int main()
 			printBoard(board);
 		}
 
+		// Condicionales para saber como quedo el juego
 		if (checkWin(board, 'O'))
 		{
 			printf("Ganaste!\n");
@@ -81,6 +83,7 @@ int main()
 		}
 	}
 
+	// Liberar memoria
 	free(board);
 	free(allPositions);
 	
@@ -98,6 +101,7 @@ char *boardMaker()
 	}
 
 	return board;
+	// Liberar memoria
 	free(board);
 }
 
@@ -135,20 +139,21 @@ void clean()
 	system("clear");
 }
 
+
 // Funciones para saber si gane o ganó la PC
 bool checkWin(char *board, char player)
 {
+	// Ciclo para saber si alguno de los dos gano de forma vertical u horizontal
 	for (int i = 0; i < 3; ++i) {
 		if ((board[i] == player && board[i + 3] == player && board[i + 6] == player) ||
 			(board[i * 3] == player && board[i * 3 + 1] == player && board[i * 3 + 2] == player))
 			return true;
 	}
+
+	// Condicional para saber si alguno de los dos gano de forma diagonal 
 	if (board[0] == player && board[4] == player && board[8] == player ||
 					 board[2] == player && board[4] == player && board[6] == player)
-	{
 		return true;
-	}
-	else {
-		return false;
-	}
+
+	return false;
 }
