@@ -9,7 +9,7 @@
 
 // Declaración de las funciones
 char *boardMaker();
-char *newBoardMaker(int arrRandom, char *board, int position);
+char *newBoardMaker(int randomNum, char *board, int position);
 void printBoard(char *board);
 void freeArray(char *board);
 bool youWin(char *board);
@@ -20,9 +20,12 @@ void clean();
 // Función main
 int main() 
 {
-	int position;
+	srand(time(0));
+
 	char *board = boardMaker();
-	int quitGame = 0;
+	int *allPositions = calloc(10, sizeof(int));
+	int position, randomNum;
+	int quitGame = 0, i = 0, j = 0;
 
 	clean();
 	printf("%*s%s\n", 67, "", "Juego del gato 🐈\n");
@@ -39,10 +42,36 @@ int main()
 		}
 		else 
 		{
-			board = newBoardMaker(validPst(position-1), board, position);
+			allPositions[i] = position-1;
+
+			do {
+				randomNum = rand() % 9;
+				j = 0;
+				while (j < 10)
+				{
+					if (randomNum == allPositions[j])
+						break;
+					j++;
+				}
+			} while (randomNum == allPositions[j]);
+
+			allPositions[i+1] = randomNum;
+
+			board = newBoardMaker(randomNum, board, position);
 			printf("%*s%s\n", 67, "", "Juego del gato 🐈\n");
 			printBoard(board);
+
+			// simple imprenta de los numeros, quitar al final
+			printf("[");
+			for (int i = 0; i < 10; i++)
+			{
+				printf("%d, ", allPositions[i]);
+			}
+			printf("]\n");
+
+			i += 2;
 		}
+
 		if (youWin(board))
 		{
 			printf("Ganaste!\n");
@@ -56,34 +85,25 @@ int main()
 	}
 
 	freeArray(board);
+	free(allPositions);
 	
 	return 0;
 }
 
-// Función para saber las posiciones validas
-int validPst(int validPositions)
-{
-	srand(time(0));
-	int numRand;
-	int matched = 0; 
-
-	return numRand;
-}
-
 // Función para hacer un nuevo tablero modificado
-char *newBoardMaker(int arrRandom, char *board, int position)
+char *newBoardMaker(int randomNum, char *board, int position)
 {
 
-	printf("PC: %d, \n", arrRandom);
+	printf("PC: %d, \n", randomNum);
 	printf("User: %d, \n", position-1);
 
-	if (board[arrRandom] == 'X' || board[arrRandom] == 'O')
+	if (board[randomNum] == 'X' || board[randomNum] == 'O')
 	{
-		int o1 = (arrRandom > 1) ? -1 : 1;
+		int o1 = (randomNum > 1) ? -1 : 1;
 
-		board[arrRandom+o1] = 'X';
+		board[randomNum+o1] = 'X';
 	}
-	board[arrRandom] = 'X';
+	board[randomNum] = 'X';
 	board[position-1] = 'O';
 
 	return board;
