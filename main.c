@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <time.h>
 #include <stdbool.h>
 
@@ -11,11 +10,9 @@
 char *boardMaker();
 char *newBoardMaker(int randomNum, char *board, int position);
 void printBoard(char *board);
-void freeArray(char *board);
+void clean();
 bool youWin(char *board);
 bool pcWin(char *board);
-int validPst(int validPositions);
-void clean();
 
 // Función main
 int main() 
@@ -23,9 +20,9 @@ int main()
 	srand(time(0));
 
 	char *board = boardMaker();
-	int *allPositions = calloc(9, sizeof(int));
+	int *allPositions = calloc(9, sizeof(int)); // Array para guardar todas las posiciones
 	int position, randomNum;
-	int quitGame = 0, i = 0, j = 0;
+	int i = 0, j = 0;
 
 	clean();
 	printf("%*s%s\n", 67, "", "Juego del gato 🐈\n");
@@ -44,8 +41,9 @@ int main()
 		{
 			allPositions[i] = position-1;
 			i++;
+			board = newBoardMaker(randomNum, board, position);
 
-			if (i < 9)
+			if (i < 9 && !youWin(board)) 
 			{
 				do {
 					randomNum = rand() % 9;
@@ -84,22 +82,12 @@ int main()
 		}
 	}
 
-	freeArray(board);
+	free(board);
 	free(allPositions);
 	
 	return 0;
 }
 
-// Función para hacer un nuevo tablero modificado
-char *newBoardMaker(int randomNum, char *board, int position)
-{
-	board[randomNum] = 'X';
-	board[position-1] = 'O';
-
-	return board;
-}
-
-// A partir de aca todo funciona correctamente
 // Función que hace el primer tablero
 char *boardMaker()
 {
@@ -111,12 +99,23 @@ char *boardMaker()
 	}
 
 	return board;
+	free(board);
+}
+
+// Función para hacer un nuevo tablero modificado
+char *newBoardMaker(int randomNum, char *board, int position)
+{
+	board[randomNum] = 'X';
+	board[position-1] = 'O';
+
+	return board;
 }
 
 // Función que imprime el tablero
 void printBoard(char *board) 
 {
 	int k = 0;
+
 	printf("%*s|---|---|---|\n", 69, "");
 	for (int i = 0; i < 3; i++)
 	{
@@ -131,21 +130,21 @@ void printBoard(char *board)
 	}
 }
 
+// Función para limpiar la pantalla
+void clean()
+{
+	system("clear");
+}
+
+// Funciones para saber si gane o ganó la PC
 bool youWin(char *board)
 {
-	if (board[0] == 'O' && board[1] == 'O' && board[2] == 'O' ||
-			board[3] == 'O' && board[4] == 'O' && board[5] == 'O' ||
-			board[6] == 'O' && board[7] == 'O' && board[8] == 'O')
-	{
-		return true;
+	for (int i = 0; i < 3; ++i) {
+		if ((board[i] == 'O' && board[i + 3] == 'O' && board[i + 6] == 'O') ||
+			(board[i * 3] == 'O' && board[i * 3 + 1] == 'O' && board[i * 3 + 2] == 'O'))
+			return true;
 	}
-	else if (board[0] == 'O' && board[3] == 'O' && board[6] == 'O' ||
-					 board[1] == 'O' && board[4] == 'O' && board[7] == 'O' ||
-					 board[2] == 'O' && board[5] == 'O' && board[8] == 'O')
-	{
-		return true;
-	}
-	else if (board[0] == 'O' && board[4] == 'O' && board[8] == 'O' ||
+	if (board[0] == 'O' && board[4] == 'O' && board[8] == 'O' ||
 					 board[2] == 'O' && board[4] == 'O' && board[6] == 'O')
 	{
 		return true;
@@ -157,35 +156,17 @@ bool youWin(char *board)
 
 bool pcWin(char *board)
 {
-	if (board[0] == 'X' && board[1] == 'X' && board[2] == 'X' ||
-			board[3] == 'X' && board[4] == 'X' && board[5] == 'X' ||
-			board[6] == 'X' && board[7] == 'X' && board[8] == 'X')
-	{
-		return true;
+	for (int i = 0; i < 3; ++i) {
+		if ((board[i] == 'X' && board[i + 3] == 'X' && board[i + 6] == 'X') ||
+			(board[i * 3] == 'X' && board[i * 3 + 1] == 'X' && board[i * 3 + 2] == 'X'))
+			return true;
 	}
-	else if (board[0] == 'X' && board[3] == 'X' && board[6] == 'X' ||
-					 board[1] == 'X' && board[4] == 'X' && board[7] == 'X' ||
-					 board[2] == 'X' && board[5] == 'X' && board[8] == 'X')
-	{
-		return true;
-	}
-	else if (board[0] == 'X' && board[4] == 'X' && board[8] == 'X' ||
-					 board[2] == 'X' && board[4] == 'X' && board[6] == 'x')
+	if (board[0] == 'X' && board[4] == 'X' && board[8] == 'X' ||
+					 board[2] == 'X' && board[4] == 'X' && board[6] == 'X')
 	{
 		return true;
 	}
 	else {
 		return false;
 	}
-}
-
-// Función para liberar memoria
-void freeArray(char *board)
-{
-	free(board);
-}
-
-void clean()
-{
-	system("clear");
 }
