@@ -11,8 +11,7 @@ char *boardMaker();
 char *newBoardMaker(int randomNum, char *board, int position);
 void printBoard(char *board);
 void clean();
-bool youWin(char *board);
-bool pcWin(char *board);
+bool checkWin(char *board, char player);
 
 // Función main
 int main() 
@@ -20,7 +19,7 @@ int main()
 	srand(time(0));
 
 	char *board = boardMaker();
-	int *allPositions = calloc(9, sizeof(int)); // Array para guardar todas las posiciones
+	int *allPositions = calloc(N, sizeof(int)); // Array para guardar todas las posiciones
 	int position, randomNum;
 	int i = 0, j = 0;
 
@@ -41,14 +40,14 @@ int main()
 		{
 			allPositions[i] = position-1;
 			i++;
-			board = newBoardMaker(randomNum, board, position);
+			if (i != 1) board = newBoardMaker(randomNum, board, position);
 
-			if (i < 9 && !youWin(board)) 
+			if (i < N && !checkWin(board, 'O')) 
 			{
 				do {
-					randomNum = rand() % 9;
+					randomNum = rand() % N;
 					j = 0;
-					while (j < 9)
+					while (j < N)
 					{
 						if (randomNum == allPositions[j])
 							break;
@@ -56,26 +55,26 @@ int main()
 					}
 				} while (randomNum == allPositions[j]);
 				allPositions[i] = randomNum;
+				i++;
 			}
 
-			i++;
 			board = newBoardMaker(randomNum, board, position);
 			clean();
 			printf("%*s%s\n", 67, "", "Juego del gato 🐈\n");
 			printBoard(board);
 		}
 
-		if (youWin(board))
+		if (checkWin(board, 'O'))
 		{
 			printf("Ganaste!\n");
 			break;
 		}
-		if (pcWin(board))
+		if (checkWin(board, 'X'))
 		{
 			printf("La PC Ganó!\n");
 			break;
 		}
-		if (!(youWin(board)) && !(pcWin(board)) && i == 10)
+		if (i == N)
 		{
 			printf("Es un empate!\n");
 			break;
@@ -137,32 +136,15 @@ void clean()
 }
 
 // Funciones para saber si gane o ganó la PC
-bool youWin(char *board)
+bool checkWin(char *board, char player)
 {
 	for (int i = 0; i < 3; ++i) {
-		if ((board[i] == 'O' && board[i + 3] == 'O' && board[i + 6] == 'O') ||
-			(board[i * 3] == 'O' && board[i * 3 + 1] == 'O' && board[i * 3 + 2] == 'O'))
+		if ((board[i] == player && board[i + 3] == player && board[i + 6] == player) ||
+			(board[i * 3] == player && board[i * 3 + 1] == player && board[i * 3 + 2] == player))
 			return true;
 	}
-	if (board[0] == 'O' && board[4] == 'O' && board[8] == 'O' ||
-					 board[2] == 'O' && board[4] == 'O' && board[6] == 'O')
-	{
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-bool pcWin(char *board)
-{
-	for (int i = 0; i < 3; ++i) {
-		if ((board[i] == 'X' && board[i + 3] == 'X' && board[i + 6] == 'X') ||
-			(board[i * 3] == 'X' && board[i * 3 + 1] == 'X' && board[i * 3 + 2] == 'X'))
-			return true;
-	}
-	if (board[0] == 'X' && board[4] == 'X' && board[8] == 'X' ||
-					 board[2] == 'X' && board[4] == 'X' && board[6] == 'X')
+	if (board[0] == player && board[4] == player && board[8] == player ||
+					 board[2] == player && board[4] == player && board[6] == player)
 	{
 		return true;
 	}
