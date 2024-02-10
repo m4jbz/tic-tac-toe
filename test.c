@@ -23,7 +23,7 @@ int main()
 	srand(time(0));
 
 	char *board = boardMaker();
-	int *allPositions = calloc(10, sizeof(int));
+	int *allPositions = calloc(9, sizeof(int));
 	int position, randomNum;
 	int quitGame = 0, i = 0, j = 0;
 
@@ -36,40 +36,35 @@ int main()
 		printf("Posición []: \n");
 		scanf("%d", &position);
 
-		if (position > N || position < 1 || !(board[position-1] == ' ')) // Este if si funciona
+		if (position > N || position < 1 || !(board[position-1] == ' '))
 		{
 			printf("Posición no valida. Intenta de nuevo.\n");
 		}
 		else 
 		{
 			allPositions[i] = position-1;
+			i++;
 
-			do {
-				randomNum = rand() % 9;
-				j = 0;
-				while (j < 10)
-				{
-					if (randomNum == allPositions[j])
-						break;
-					j++;
-				}
-			} while (randomNum == allPositions[j]);
+			if (i < 9)
+			{
+				do {
+					randomNum = rand() % 9;
+					j = 0;
+					while (j < 9)
+					{
+						if (randomNum == allPositions[j])
+							break;
+						j++;
+					}
+				} while (randomNum == allPositions[j]);
+				allPositions[i] = randomNum;
+			}
 
-			allPositions[i+1] = randomNum;
-
+			i++;
 			board = newBoardMaker(randomNum, board, position);
+			clean();
 			printf("%*s%s\n", 67, "", "Juego del gato 🐈\n");
 			printBoard(board);
-
-			// simple imprenta de los numeros, quitar al final
-			printf("[");
-			for (int i = 0; i < 10; i++)
-			{
-				printf("%d, ", allPositions[i]);
-			}
-			printf("]\n");
-
-			i += 2;
 		}
 
 		if (youWin(board))
@@ -80,6 +75,11 @@ int main()
 		if (pcWin(board))
 		{
 			printf("La PC Ganó!\n");
+			break;
+		}
+		if (!(youWin(board)) && !(pcWin(board)) && i == 10)
+		{
+			printf("Es un empate!\n");
 			break;
 		}
 	}
@@ -93,16 +93,6 @@ int main()
 // Función para hacer un nuevo tablero modificado
 char *newBoardMaker(int randomNum, char *board, int position)
 {
-
-	printf("PC: %d, \n", randomNum);
-	printf("User: %d, \n", position-1);
-
-	if (board[randomNum] == 'X' || board[randomNum] == 'O')
-	{
-		int o1 = (randomNum > 1) ? -1 : 1;
-
-		board[randomNum+o1] = 'X';
-	}
 	board[randomNum] = 'X';
 	board[position-1] = 'O';
 
