@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdbool.h>
-#include <verto.h>
 
 // Numero de posiciones
 #define N 9
